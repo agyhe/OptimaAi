@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OptimaAi</title>
+    <style>
+        :root {
+            --bg-main: #090d16;
+            --bg-card: #0f172a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --warning: #f59e0b;
+            --card-border: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 480px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        header {
+            padding: 14px 16px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.1rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-pro {
+            font-size: 0.65rem;
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .main-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .view-section {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .view-section.active {
+            display: flex;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        /* Estilos del Chat */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            padding-bottom: 10px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .message.user {
+            background: var(--accent);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        .message.ai {
+            background: var(--card-border);
+            color: var(--text-main);
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .chat-input {
+            flex: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 10px;
+            color: white;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        .btn-send {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Cuadrícula de Opciones Principales */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .option-card {
+            background: var(--bg-main);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 14px;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.2s;
+        }
+
+        .option-card:hover {
+            border-color: var(--accent);
+        }
+
+        /* Alertas en Inicio */
+        .alert-box {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .alert-item {
+            font-size: 0.75rem;
+            color: var(--text-main);
+            margin-top: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Formularios e Inputs */
+        .form-input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid var(--card-border);
+            background: var(--bg-main);
+            color: #fff;
+            font-size: 0.78rem;
+            outline: none;
+            margin-bottom: 6px;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 8px;
+            background: var(--accent);
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            color: white;
+            font-size: 0.78rem;
+            cursor: pointer;
+        }
+
+        /* Planes y Pagos PRO */
+        .pricing-grid {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .price-card {
+            flex: 1;
+            background: var(--bg-main);
+            border: 2px solid var(--card-border);
+            border-radius: 10px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .price-card.selected {
+            border-color: var(--warning);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .price-tag {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--warning);
+            margin-top: 8px;
+        }
+
+        .btn-payment {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.78rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn-banesco {
+            background: #002D62;
+            color: white;
+        }
+
+        .btn-binance {
+            background: #F3BA2F;
+            color: #000;
+        }
+
+        .activation-input {
+            width: 100%;
+            padding: 9px;
+            border-radius: 6px;
+            border: 1px solid var(--card-border);
+            background: var(--bg-main);
+            color: #fff;
+            font-size: 0.8rem;
+            outline: none;
+        }
+
+        .btn-activate {
+            padding: 9px 14px;
+            background: var(--warning);
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: #000;
+        }
+
+        /* Tabla de Base de Datos Admin */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--card-border);
+            padding: 6px;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--warning);
+        }
+
+        /* Barra de Navegación Inferior */
+        nav {
+            display: flex;
+            background: var(--bg-card);
+            border-top: 1px solid var(--card-border);
+            height: 56px;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.55rem;
+            cursor: pointer;
+            gap: 2px;
+        }
+
+        .nav-item.active {
+            color: var(--accent);
+        }
+
+        .nav-item span.icon {
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">OptimaAi</div>
+        <div id="status-badge" class="badge-pro">GRATIS</div>
+    </header>
+
+    <div class="main-container">
+
+        <!-- 1. VISTA INICIO -->
+        <div id="view-home" class="view-section active">
+            <div class="card">
+                <h2 style="font-size: 1rem; margin-bottom: 4px;">Panel Principal</h2>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">Bienvenido a tu centro de
+                    control.</p>
+
+                <div class="options-grid" style="margin-bottom: 10px;">
+                    <div class="option-card"
+                        onclick="cambiarVistaTab('chat', document.querySelectorAll('.nav-item')[1])">
+                        <div style="font-size: 1.3rem; margin-bottom: 2px;">💬</div>
+                        <div style="font-size: 0.75rem; font-weight: bold;">Asistente IA</div>
+                    </div>
+                    <div class="option-card"
+                        onclick="cambiarVistaTab('tareas', document.querySelectorAll('.nav-item')[2])">
+                        <div style="font-size: 1.3rem; margin-bottom: 2px;">📅</div>
+                        <div style="font-size: 0.75rem; font-weight: bold;">Entregas</div>
+                    </div>
+                </div>
+
+                <div class="alert-box">
+                    <div style="font-size: 0.78rem; font-weight: bold; color: var(--warning);">🔔 Alertas y Pendientes
+                        Activos</div>
+                    <div id="lista-alertas-home" style="margin-top: 4px;">
+                        <span style="font-size: 0.72rem; color: var(--text-muted);">No hay pendientes próximos. ¡Todo al
+                            día!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. VISTA CHAT -->
+        <div id="view-chat" class="view-section">
+            <div class="card chat-container" id="chatHistory" style="flex:1;">
+                <div class="message ai">¡Hola! Soy tu asistente en OptimaAi. ¿En qué te puedo ayudar hoy?</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="userInput" class="chat-input" placeholder="Escribe un mensaje..."
+                    onkeypress="manejarEnter(event)">
+                <button class="btn-send" onclick="enviarMensaje()">Enviar</button>
+            </div>
+        </div>
+
+        <!-- 3. VISTA TAREAS Y ENTREGAS -->
+        <div id="view-tareas" class="view-section">
+            <div class="card">
+                <h2 style="font-size: 1rem; margin-bottom: 6px;">Gestión de Entregas y Horarios</h2>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">Agrega tus tareas para ver
+                    alertas automáticas en el inicio.</p>
+
+                <div
+                    style="margin-bottom: 12px; background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; border: 1px solid var(--card-border);">
+                    <div style="font-size: 0.78rem; font-weight: bold; margin-bottom: 6px;">➕ Nuevo Pendiente / Entrega
+                    </div>
+                    <input type="text" id="inputTituloTarea" class="form-input"
+                        placeholder="Título (Ej: Proyecto de Física)">
+                    <input type="date" id="inputFechaTarea" class="form-input">
+                    <button class="btn-action" onclick="agregarTarea()">Guardar Entrega</button>
+                </div>
+
+                <div style="font-size: 0.78rem; font-weight: bold; margin-bottom: 6px;">📋 Tus Entregas Registradas
+                </div>
+                <div id="contenedor-lista-tareas"
+                    style="max-height: 160px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;"></div>
+            </div>
+        </div>
+
+        <!-- 4. VISTA PRO & BASE DE DATOS ADMIN -->
+        <div id="view-pro" class="view-section">
+            <div class="card">
+                <div id="client-pro-section">
+                    <span class="badge-pro">👑 OPTIMAAI PRO</span>
+                    <div style="font-size: 1.055rem; font-weight: bold; margin: 10px 0 4px 0;">Selecciona tu Plan</div>
+                    <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4;">Elige tu plan, realiza el
+                        pago y solicita tu código individual por correo.</p>
+
+                    <div class="pricing-grid">
+                        <div class="price-card selected" id="card-mensual" onclick="seleccionarPlan('mensual', 3)">
+                            <div style="font-size: 0.8rem; font-weight: bold;">Plan Mensual</div>
+                            <div style="font-size: 0.68rem; color: var(--text-muted);">Acceso mes a mes</div>
+                            <div class="price-tag">$3</div>
+                        </div>
+
+                        <div class="price-card" id="card-anual" onclick="seleccionarPlan('anual', 30)">
+                            <div style="font-size: 0.8rem; font-weight: bold;">Plan Anual <span
+                                    style="font-size: 0.55rem; background: var(--warning); color: #000; padding: 1px 4px; border-radius: 3px;">AHORRA</span>
+                            </div>
+                            <div style="font-size: 0.68rem; color: var(--text-muted);">Equivalente $2.50/m</div>
+                            <div class="price-tag">$30</div>
+                        </div>
+                    </div>
+
+                    <div id="payment-box"
+                        style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--card-border);">
+                        <div style="font-size: 0.78rem; font-weight: bold; color: var(--warning);"
+                            id="selected-plan-text">Plan seleccionado (MENSUAL): $3</div>
+
+                        <button class="btn-payment btn-banesco" onclick="mostrarDatosBanesco()">🏦 Ver datos Banesco
+                            Panamá</button>
+                        <button class="btn-payment btn-binance" onclick="mostrarDatosBinance()">🟡 Ver Binance Pay
+                            (USDT)</button>
+
+                        <div id="payment-details"
+                            style="font-size: 0.75rem; background: rgba(15, 23, 42, 0.7); padding: 8px; border-radius: 6px; display: none; color: var(--text-muted);">
+                        </div>
+
+                        <div
+                            style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px; border: 1px solid var(--card-border);">
+                            <p style="font-size: 0.73rem; font-weight: bold; margin-bottom: 4px;">1. Envía tu
+                                comprobante:</p>
+                            <input type="email" id="userEmail" class="activation-input"
+                                placeholder="Tu correo electrónico..." style="margin-bottom: 6px;">
+                            <a id="btn-email-request" href="#" target="_blank" class="btn-payment"
+                                style="background: var(--card-border); color: var(--text-main); text-decoration: none; display: flex; justify-content: center; font-size: 0.73rem; padding: 8px;">
+                                📧 Enviar comprobante al correo oficial
+                            </a>
+                        </div>
+
+                        <div>
+                            <p style="font-size: 0.73rem; font-weight: bold; margin-bottom: 4px;">2. Ingresa tu código
+                                individual:</p>
+                            <div style="display: flex; gap: 6px;">
+                                <input type="text" id="activationCode" class="activation-input"
+                                    placeholder="Ej: OPT-8841-XYZ">
+                                <button class="btn-activate" onclick="validarCodigoIndividual()">Activar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel Base de Datos Admin (Se abre automáticamente al poner la clave de admin en la caja de arriba) -->
+                <div id="admin-panel"
+                    style="display: none; margin-top: 14px; border-top: 1px solid var(--warning); padding-top: 10px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-size: 0.8rem; font-weight: bold; color: var(--warning);">⚙️ Panel de
+                            Administrador (BD)</span>
+                        <button onclick="cerrarAdmin()"
+                            style="background: #ef4444; border: none; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; cursor: pointer;">Cerrar</button>
+                    </div>
+                    <p style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 6px;">Agrega o elimina códigos
+                        individuales válidos:</p>
+
+                    <div style="display: flex; gap: 4px; margin-bottom: 8px;">
+                        <input type="text" id="nuevoCodigoInput" class="activation-input"
+                            placeholder="Nuevo código (Ej: OPT-9999)">
+                        <button onclick="agregarCodigoDB()" class="btn-activate"
+                            style="padding: 6px 10px;">Agregar</button>
+                    </div>
+
+                    <div style="max-height: 120px; overflow-y: auto;">
+                        <table id="tablaCodigos">
+                            <tr>
+                                <th>Código</th>
+                                <th>Acción</th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Navegación Inferior -->
+    <nav>
+        <button class="nav-item active" onclick="cambiarVistaTab('home', this)">
+            <span class="icon">🏠</span>
+            Inicio
+        </button>
+        <button class="nav-item" onclick="cambiarVistaTab('chat', this)">
+            <span class="icon">💬</span>
+            Chat IA
+        </button>
+        <button class="nav-item" onclick="cambiarVistaTab('tareas', this)">
+            <span class="icon">📅</span>
+            Entregas
+        </button>
+        <button class="nav-item" onclick="cambiarVistaTab('pro', this)">
+            <span class="icon">👑</span>
+            PRO
+        </button>
+    </nav>
+
+    <script>
+        let codigosDB = JSON.parse(localStorage.getItem('optima_codigos')) || ["OPT-1942-A", "OPT-5583-B", "OPT-9921-C"];
+        let tareasDB = JSON.parse(localStorage.getItem('optima_tareas')) || [];
+        let planActualPrecio = 3;
+        const CORREO_OFICIAL = "Optimaaisoporte@gmail.com";
+        const CLAVE_ADMIN = "admin123"; // <-- Puedes cambiar tu clave de administrador aquí
+
+        function cambiarVistaTab(vista, elemento) {
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+
+            document.getElementById('view-' + vista).classList.add('active');
+            if (elemento) elemento.classList.add('active');
+
+            if (vista === 'home') actualizarAlertasInicio();
+        }
+
+        function enviarMensaje() {
+            const input = document.getElementById('userInput');
+            const texto = input.value.trim();
+            if (!texto) return;
+
+            const chatHistory = document.getElementById('chatHistory');
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user';
+            userMsg.innerText = texto;
+            chatHistory.appendChild(userMsg);
+
+            input.value = '';
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            setTimeout(() => {
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'message ai';
+                aiMsg.innerText = "Entendido. Sigo procesando tu consulta de manera óptima.";
+                chatHistory.appendChild(aiMsg);
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }, 600);
+        }
+
+        function manejarEnter(e) { if (e.key === 'Enter') enviarMensaje(); }
+
+        function agregarTarea() {
+            const titulo = document.getElementById('inputTituloTarea').value.trim();
+            const fecha = document.getElementById('inputFechaTarea').value;
+
+            if (!titulo || !fecha) {
+                alert("Por favor ingresa el título y la fecha.");
+                return;
+            }
+
+            tareasDB.push({ titulo, fecha });
+            localStorage.setItem('optima_tareas', JSON.stringify(tareasDB));
+
+            document.getElementById('inputTituloTarea').value = '';
+            document.getElementById('inputFechaTarea').value = '';
+            renderizarTareas();
+            actualizarAlertasInicio();
+            alert("¡Entrega agregada con éxito!");
+        }
+
+        function renderizarTareas() {
+            const contenedor = document.getElementById('contenedor-lista-tareas');
+            if (tareasDB.length === 0) {
+                contenedor.innerHTML = `<span style="font-size:0.72rem; color:var(--text-muted);">No hay entregas guardadas.</span>`;
+                return;
+            }
+
+            contenedor.innerHTML = "";
+            tareasDB.forEach((t, index) => {
+                contenedor.innerHTML += `
+                    <div style="background:var(--bg-main); border:1px solid var(--card-border); padding:6px 8px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="font-size:0.75rem; font-weight:bold;">${t.titulo}</div>
+                            <div style="font-size:0.65rem; color:var(--warning);">Fecha: ${t.fecha}</div>
+                        </div>
+                        <button onclick="eliminarTarea(${index})" style="background:#ef4444; border:none; color:white; padding:2px 6px; border-radius:4px; font-size:0.65rem; cursor:pointer;">Hecho</button>
+                    </div>
+                `;
+            });
+        }
+
+        function eliminarTarea(index) {
+            tareasDB.splice(index, 1);
+            localStorage.setItem('optima_tareas', JSON.stringify(tareasDB));
+            renderizarTareas();
+            actualizarAlertasInicio();
+        }
+
+        function actualizarAlertasInicio() {
+            const cajaAlertas = document.getElementById('lista-alertas-home');
+            if (tareasDB.length === 0) {
+                cajaAlertas.innerHTML = `<span style="font-size: 0.72rem; color: var(--text-muted);">No hay pendientes próximos. ¡Todo al día!</span>`;
+                return;
+            }
+
+            cajaAlertas.innerHTML = "";
+            tareasDB.forEach(t => {
+                cajaAlertas.innerHTML += `
+                    <div class="alert-item">
+                        <span>📌 <b>${t.titulo}</b></span>
+                        <span style="color: var(--warning);">${t.fecha}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function seleccionarPlan(tipo, precio) {
+            planActualPrecio = precio;
+            document.querySelectorAll('.price-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('card-' + tipo).classList.add('selected');
+
+            document.getElementById('selected-plan-text').innerText = `Plan seleccionado (${tipo.toUpperCase()}): $${precio}`;
+            document.getElementById('payment-details').style.display = 'none';
+            actualizarEnlaceCorreo();
+        }
+
+        function actualizarEnlaceCorreo() {
+            const emailInput = document.getElementById('userEmail').value || "cliente@correo.com";
+            const asunto = encodeURIComponent("Comprobante de Pago - OptimaAi PRO");
+            const cuerpo = encodeURIComponent(`Hola, acabo de realizar el pago de $${planActualPrecio} para OptimaAi PRO.\n\nMi correo es: ${emailInput}\n\nAdjunto mi comprobante de pago para que me envíen mi código de activación individual.`);
+
+            document.getElementById('btn-email-request').href = `mailto:${CORREO_OFICIAL}?subject=${asunto}&body=${cuerpo}`;
+        }
+
+        document.getElementById('userEmail').addEventListener('input', actualizarEnlaceCorreo);
+        actualizarEnlaceCorreo();
+
+        function mostrarDatosBanesco() {
+            const box = document.getElementById('payment-details');
+            box.style.display = 'block';
+            box.innerHTML = `<b>Banesco Panamá:</b><br>• Titular: Administrador<br>• Cuenta: 0123-XXXX-XXXXXXXX<br>• Monto exacto: $${planActualPrecio}.00`;
+        }
+
+        function mostrarDatosBinance() {
+            const box = document.getElementById('payment-details');
+            box.style.display = 'block';
+            box.innerHTML = `<b>Binance Pay (USDT):</b><br>• Email: binance@optimaai.com<br>• Pay ID: 123456789<br>• Monto exacto: $${planActualPrecio}.00 USDT`;
+        }
+
+        // Validación de Código o Acceso Administrador desde la misma caja
+        function validarCodigoIndividual() {
+            const codigoInput = document.getElementById('activationCode').value.trim();
+
+            if (codigoInput === CLAVE_ADMIN) {
+                // Si escribes la clave admin, se abre la base de datos
+                document.getElementById('admin-panel').style.display = 'block';
+                actualizarTablaDB();
+                alert("🔐 ¡Acceso de Administrador concedido!");
+                document.getElementById('activationCode').value = '';
+            } else if (codigosDB.includes(codigoInput)) {
+                // Si es un código PRO válido de cliente
+                document.getElementById('status-badge').innerText = "PRO 👑";
+                document.getElementById('status-badge').style.background = "rgba(245, 158, 11, 0.15)";
+                document.getElementById('status-badge').style.color = "var(--warning)";
+
+                document.getElementById('client-pro-section').innerHTML = `
+                    <div style="text-align: center; padding: 20px 0;">
+                        <span class="badge-pro" style="margin: 0 auto 10px auto;">👑 ACCESO ACTIVO</span>
+                        <h2 style="font-size: 1.1rem; margin-bottom: 6px;">¡Bienvenido a OptimaAi PRO!</h2>
+                        <p style="font-size: 0.78rem; color: var(--text-muted);">Código validado con éxito. Disfruta de tu experiencia avanzada.</p>
+                    </div>
+                `;
+            } else {
+                alert("❌ Código individual no válido.");
+            }
+        }
+
+        function cerrarAdmin() {
+            document.getElementById('admin-panel').style.display = 'none';
+        }
+
+        function actualizarTablaDB() {
+            const tabla = document.getElementById('tablaCodigos');
+            tabla.innerHTML = `<tr><th>Código</th><th>Acción</th></tr>`;
+            codigosDB.forEach((cod, index) => {
+                tabla.innerHTML += `
+                    <tr>
+                        <td><b>${cod}</b></td>
+                        <td><button onclick="eliminarCodigoDB(${index})" style="background:#ef4444; border:none; color:white; padding:2px 6px; border-radius:3px; cursor:pointer;">Eliminar</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function agregarCodigoDB() {
+            const nuevoCod = document.getElementById('nuevoCodigoInput').value.trim();
+            if (nuevoCod && !codigosDB.includes(nuevoCod)) {
+                codigosDB.push(nuevoCod);
+                localStorage.setItem('optima_codigos', JSON.stringify(codigosDB));
+                document.getElementById('nuevoCodigoInput').value = '';
+                actualizarTablaDB();
+                alert("¡Código agregado con éxito!");
+            } else {
+                alert("Código inválido o ya existente.");
+            }
+        }
+
+        function eliminarCodigoDB(index) {
+            codigosDB.splice(index, 1);
+            localStorage.setItem('optima_codigos', JSON.stringify(codigosDB));
+            actualizarTablaDB();
+        }
+
+        renderizarTareas();
+        actualizarAlertasInicio();
+    </script>
+</body>
+
+</html>

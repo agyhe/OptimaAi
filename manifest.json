@@ -1,0 +1,21 @@
+{
+    "nombre": "Optima AI Planner",
+    "short_name": "Optima",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#0a0f1d",
+    "theme_color": "#0a0f1d",
+    "description": "Aplicación de productividad con agente de IA para optimizar rutinas y estudios.",
+    "iconos": [
+        {
+            "src": "icon.png",
+            "tamaños": "192x192",
+            "tipo": "imagen/png"
+        },
+        {
+            "src": "icon.png",
+            "tamaños": "512x512",
+            "tipo": "imagen/png"
+        }
+    ]
+}
